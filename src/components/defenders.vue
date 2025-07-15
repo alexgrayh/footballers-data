@@ -330,6 +330,8 @@
     </table>
 </template>
 <script>
+import ipdata from '@/constants/ipdata';
+import portdata from '@/constants/portdata';
 import axios from 'axios';
 
 export default {
@@ -565,7 +567,7 @@ export default {
         async insertFootballer() {
             this.visible = false;
             try {
-                const response = await axios.post('http://localhost:3001/defenders', this.newFootballer);
+                const response = await axios.post(`http://${ipdata}:${portdata}/defenders`, this.newFootballer);
                 this.footballers.push(response.data);
                 this.newFootballer = this.restartNewFootballer();
             } catch (error) {
@@ -595,7 +597,7 @@ export default {
         async updateFootballer() {
             this.updateVisible = false;
             try {
-                const response = await axios.put(`http://localhost:3001/defenders/${this.footballer._id}`, {
+                const response = await axios.put(`http://${ipdata}:${portdata}/defenders/${this.footballer._id}`, {
                     ...this.footballer,
                     name: this.updatedFootballer.name,
                     nationality: {
@@ -635,7 +637,7 @@ export default {
         },
         async getFootballers() {
             try {
-                const response = await axios.get('http://localhost:3001/defenders');
+                const response = await axios.get(`http://${ipdata}:${portdata}/defenders`);
                 this.footballers = response.data;
             } catch (error) {
                 console.error('Error when fetching defenders:', error);
@@ -643,7 +645,7 @@ export default {
         },
         deleteSelectedFootballers() {
             this.selectedFootballers.forEach(id => {
-                axios.delete(`http://localhost:3001/defenders/${id}`)
+                axios.delete(`http://${ipdata}:${portdata}/defenders/${id}`)
                 .then(() => {
                     this.getFootballers();
                 })
