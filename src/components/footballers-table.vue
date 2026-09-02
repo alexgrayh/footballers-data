@@ -87,7 +87,7 @@
                 <td>{{ footballer.height ? footballer.height.toFixed(2) : '0.00' }}</td>
                 <td>{{ footballer.birthday || '-' }}</td>
                 <td>{{ footballer.apps }}</td>
-                <td v-if="hasGoals" class="fw-semibold text-success">{{ footballer.goals }}</td>
+                <td v-if="hasGoals">{{ footballer.goals }}</td>
                 <td>{{ footballer.intCaps }}</td>
                 <td v-if="hasGoals">{{ footballer.intGoals }}</td>
                 <td>
