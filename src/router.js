@@ -1,33 +1,34 @@
 import { createRouter, createWebHistory } from "vue-router";
+import FootballersTable from "./components/footballers-table.vue";
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/forwards',
-            name: 'forwards',
-            component: () => import("@/components/forwards.vue")
-        },
-        {
-            path: '/',
-            redirect: 'forwards'
-        },
-        {
-            path: '/midfielders',
-            name: 'midfielders',
-            component: () => import("@/components/midfielders.vue")
-        },
-        {
             path: '/defenders',
-            name: 'defenders',
-            component: () => import("@/components/defenders.vue")
+            name: 'DefendersView',
+            component: FootballersTable,
+            props: { category: 'defenders' }
+        },
+        {
+            path: '/forwards',
+            name: 'ForwardsView',
+            component: FootballersTable,
+            props: { category: 'forwards' }
         },
         {
             path: '/goalkeepers',
-            name: 'goalkeepers',
-            component: () => import("@/components/goalkeepers.vue")
+            name: 'GoalkeepersView',
+            component: FootballersTable,
+            props: { category: 'goalkeepers' }
+        },
+        {
+            path: '/midfielders',
+            name: 'MidfieldersView',
+            component: FootballersTable,
+            props: { category: 'midfielders' }
         }
     ]
 });
 
-export default router
+export default router;

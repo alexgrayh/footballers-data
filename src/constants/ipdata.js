@@ -1,3 +1,3 @@
-const ipdata = "192.168.5.192";
+const ipdata = "localhost";
 
 export default ipdata
