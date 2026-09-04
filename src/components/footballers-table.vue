@@ -456,7 +456,7 @@ export default {
         birthplace: '',
         countryOfBirth: { flag: '', name: '' },
         position: defaultPosition,
-        height: 1.80,
+        height: 0,
         birthday: '',
         apps: 0,
         goals: 0,
