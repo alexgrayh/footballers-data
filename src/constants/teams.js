@@ -2,7 +2,7 @@ export const teams = [
   // England (ENG)
   { name: 'AFC Bournemouth', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/65.png', tc: 'ENG' },
   { name: 'Arsenal FC', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/127.png', tc: 'ENG' },
-  { name: 'Aston Villa FC', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/151.png', tc: 'ENG' },
+  { name: 'Aston Villa FC', logo: 'https://img.a.transfermarkt.technology/wappen/homepageWappen150x150/405.png?lm=4711', tc: 'ENG' },
   { name: 'Brentford FC', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/274.png', tc: 'ENG' },
   { name: 'Brighton & Hove Albion', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/276.png', tc: 'ENG' },
   { name: 'Chelsea FC', logo: 'https://s.hs-data.com/gfx/emblem/common/80x80/373.png', tc: 'ENG' },

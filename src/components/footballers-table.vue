@@ -180,7 +180,7 @@
               <!-- DATOS FÍSICOS Y ESTADÍSTICAS -->
               <div class="col-md-3">
                 <label class="form-label mb-0 fw-semibold">Height (m)</label>
-                <input type="number" step="0.01" class="form-control form-control-sm" v-model="formData.height">
+                <input type="number" step="0.01" min="0" class="form-control form-control-sm" v-model="formData.height">
               </div>
               <div class="col-md-3">
                 <label class="form-label mb-0 fw-semibold">Birthday</label>
@@ -188,21 +188,21 @@
               </div>
               <div class="col-md-3">
                 <label class="form-label mb-0 fw-semibold">Apps</label>
-                <input type="number" class="form-control form-control-sm" v-model="formData.apps">
+                <input type="number" min="0" class="form-control form-control-sm" v-model="formData.apps">
               </div>
               <div class="col-md-3" v-if="hasGoals">
                 <label class="form-label mb-0 fw-semibold">Goals</label>
-                <input type="number" class="form-control form-control-sm" v-model="formData.goals">
+                <input type="number" min="0" class="form-control form-control-sm" v-model="formData.goals">
               </div>
 
               <!-- SELECCIÓN NACIONAL -->
               <div class="col-md-3">
                 <label class="form-label mb-0 fw-semibold">IntCaps</label>
-                <input type="number" class="form-control form-control-sm" v-model="formData.intCaps">
+                <input type="number" min="0" class="form-control form-control-sm" v-model="formData.intCaps">
               </div>
               <div class="col-md-3" v-if="hasGoals">
                 <label class="form-label mb-0 fw-semibold">IntGoals</label>
-                <input type="number" class="form-control form-control-sm" v-model="formData.intGoals">
+                <input type="number" min="0" class="form-control form-control-sm" v-model="formData.intGoals">
               </div>
 
               <!-- EQUIPO CON BUSCADOR Y NAVEGACIÓN TECLADO -->
