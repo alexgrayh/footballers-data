@@ -1,7 +1,6 @@
 <template>
   <div class="container-fluid py-3 compact-view">
     <div class="card shadow-sm border-0">
-      
       <!-- HEADER PRINCIPAL -->
       <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center border-bottom">
         <h5 class="mb-0 text-capitalize text-primary fw-bold">
@@ -11,22 +10,16 @@
           <button class="btn btn-sm btn-success me-2" @click="openCreateModal">
             <i class="fa-solid fa-plus me-1"></i> Create
           </button>
-          <button 
-            class="btn btn-sm btn-outline-danger" 
-            @click="deleteSelectedFootballers"
-            :disabled="!selectedFootballers.length"
-          >
+          <button class="btn btn-sm btn-outline-danger" @click="openDeleteModal" :disabled="!selectedFootballers.length">
             <i class="fa-solid fa-trash me-1"></i> Delete ({{ selectedFootballers.length }})
           </button>
         </div>
       </div>
-
       <!-- CUERPO DE LA TABLA -->
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-sm table-hover align-middle mb-0 text-nowrap fs-7">
             <thead class="table-light align-top">
-              
               <!-- FILA 1: FILTROS DE BÚSQUEDA -->
               <tr>
                 <th style="width: 30px;"></th>
@@ -47,7 +40,6 @@
                 <th v-if="category === 'goalkeepers'"><input type="text" class="form-control form-control-xs" placeholder="Starter..." v-model="filters.starter"></th>
                 <th style="width: 50px;"></th>
               </tr>
-
               <!-- FILA 2: CABECERA Y ORDENAMIENTO -->
               <tr class="text-secondary fw-semibold">
                 <th><input type="checkbox" class="form-check-input" @change="toggleSelectAll"></th>
@@ -75,12 +67,12 @@
                 <td class="text-muted">{{ index + 1 }}</td>
                 <td>{{ footballer.name }}</td>
                 <td>
-                  <img v-if="footballer.nationality?.flag" :src="footballer.nationality.flag" class="me-1 border rounded-1" width="18" height="12" alt="flag">
+                  <img v-if="footballer.nationality?.flag" :src="footballer.nationality.flag" class="me-1 border rounded-1" width="20" height="14" alt="flag">
                   <span>{{ footballer.nationality?.name }}</span>
                 </td>
                 <td>{{ footballer.birthplace || '-' }}</td>
                 <td>
-                  <img v-if="footballer.countryOfBirth?.flag" :src="footballer.countryOfBirth.flag" class="me-1 border rounded-1" width="18" height="12" alt="flag">
+                  <img v-if="footballer.countryOfBirth?.flag" :src="footballer.countryOfBirth.flag" class="me-1 border rounded-1" width="20" height="14" alt="flag">
                   <span>{{ footballer.countryOfBirth?.name }}</span>
                 </td>
                 <td v-if="hasPosition"><span class="badge bg-light text-dark border py-1">{{ footballer.position }}</span></td>
@@ -97,10 +89,10 @@
                 <td><span class="badge bg-secondary-subtle text-secondary border">{{ footballer.tc }}</span></td>
                 <td v-if="category === 'goalkeepers'">
                   <span :class="{
-                    'badge bg-success': footballer.starter === 'a',
-                    'badge bg-primary': footballer.starter === 'b',
-                    'badge bg-warning text-dark': footballer.starter === 'c',
-                    'badge bg-secondary': footballer.starter === 'd'
+                    'badge bg-success': footballer.starter === 'A' || footballer.starter === 'a',
+                    'badge bg-primary': footballer.starter === 'B' || footballer.starter === 'b',
+                    'badge bg-warning text-dark': footballer.starter === 'C' || footballer.starter === 'c',
+                    'badge bg-secondary': footballer.starter === 'D' || footballer.starter === 'd'
                   }">
                     {{ footballer.starter }}
                   </span>
@@ -116,7 +108,6 @@
         </div>
       </div>
     </div>
-
     <!-- MODAL DE FORMULARIO DE CREACIÓN/EDICIÓN -->
     <div class="modal fade" id="footballerModal" tabindex="-1" ref="modalRef">
       <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -131,7 +122,6 @@
                 <label class="form-label mb-0 fw-semibold">Name</label>
                 <input type="text" class="form-control form-control-sm" v-model="formData.name">
               </div>
-
               <!-- SELECT DINÁMICO DE POSICIÓN -->
               <div class="col-md-6" v-if="hasPosition">
                 <label class="form-label mb-0 fw-semibold">Position</label>
@@ -142,24 +132,51 @@
                   </option>
                 </select>
               </div>
-
-              <!-- NACIONALIDAD -->
-              <div class="col-md-6">
+              <!-- NACIONALIDAD CON BUSCADOR Y NAVEGACIÓN TECLADO -->
+              <div class="col-md-6 position-relative">
                 <label class="form-label mb-0 fw-semibold">Nationality</label>
-                <input type="text" class="form-control form-control-sm mb-1" v-model="formData.nationality.name" placeholder="Country Name">
-                <input type="text" class="form-control form-control-sm" v-model="formData.nationality.flag" placeholder="Flag URL">
-              </div>
-
-              <!-- NACIMIENTO -->
-              <div class="col-md-6">
-                <label class="form-label mb-0 fw-semibold">Birthplace</label>
-                <input type="text" class="form-control form-control-sm mb-1" v-model="formData.birthplace" placeholder="Place (City)">
                 <div class="input-group input-group-sm">
-                  <input type="text" class="form-control" v-model="formData.countryOfBirth.name" placeholder="Country Name">
-                  <input type="text" class="form-control" v-model="formData.countryOfBirth.flag" placeholder="Flag URL">
+                  <span class="input-group-text bg-white" v-if="formData.nationality.flag">
+                    <img :src="formData.nationality.flag" width="18" height="12" alt="flag">
+                  </span>
+                  <input type="text" class="form-control" v-model="nationalitySearch" @input="searchCountries(nationalitySearch, 'nationality')"
+                    @keydown.down.prevent="navigateResults('down', 'nationality')" @keydown.up.prevent="navigateResults('up', 'nationality')"
+                    @keydown.enter.prevent="selectFocused('nationality')" placeholder="Search country name...">
                 </div>
+                <ul class="list-group position-absolute w-100 shadow-sm autocomplete-results mt-1" v-if="nationalityResults.length">
+                  <li class="list-group-item list-group-item-action d-flex align-items-center py-1 fs-7 cursor-pointer"
+                    v-for="(country, index) in nationalityResults" :key="country.name" :class="{ 'active': index === focusedNationalityIndex }"
+                    @click="selectCountry(country, 'nationality')">
+                    <img :src="country.flag" width="20" height="14" class="me-2 border" v-if="country.flag">
+                    <span>{{ country.name }}</span>
+                  </li>
+                </ul>
               </div>
-
+              <!-- LUGAR Y PAÍS DE NACIMIENTO CON BUSCADOR Y NAVEGACIÓN TECLADO -->
+              <div class="col-md-6 position-relative">
+                <label class="form-label mb-0 fw-semibold">Birthplace</label>
+                <input type="text" class="form-control form-control-sm mb-1" v-model="formData.birthplace" placeholder="City">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-white" v-if="formData.countryOfBirth.flag">
+                    <img :src="formData.countryOfBirth.flag" width="18" height="12" alt="flag">
+                  </span>
+                  <input type="text" class="form-control" v-model="countryOfBirthSearch" @input="searchCountries(countryOfBirthSearch, 'countryOfBirth')"
+                    @keydown.down.prevent="navigateResults('down', 'countryOfBirth')" @keydown.up.prevent="navigateResults('up', 'countryOfBirth')"
+                    @keydown.enter.prevent="selectFocused('countryOfBirth')" placeholder="Search country of birth...">
+                </div>
+                <ul class="list-group position-absolute w-100 shadow-sm autocomplete-results mt-1" v-if="countryOfBirthResults.length">
+                  <li 
+                    class="list-group-item list-group-item-action d-flex align-items-center py-1 fs-7 cursor-pointer"
+                    v-for="(country, index) in countryOfBirthResults" 
+                    :key="country.name"
+                    :class="{ 'active': index === focusedCountryOfBirthIndex }"
+                    @click="selectCountry(country, 'countryOfBirth')"
+                  >
+                    <img :src="country.flag" width="20" height="14" class="me-2 border" v-if="country.flag">
+                    <span>{{ country.name }}</span>
+                  </li>
+                </ul>
+              </div>
               <!-- DATOS FÍSICOS Y ESTADÍSTICAS -->
               <div class="col-md-3">
                 <label class="form-label mb-0 fw-semibold">Height (m)</label>
@@ -188,12 +205,24 @@
                 <input type="number" class="form-control form-control-sm" v-model="formData.intGoals">
               </div>
 
-              <!-- EQUIPO Y SELECT RESTRINGIDO DE TC -->
-              <div class="col-md-6">
+              <!-- EQUIPO CON BUSCADOR Y NAVEGACIÓN TECLADO -->
+              <div class="col-md-6 position-relative">
                 <label class="form-label mb-0 fw-semibold">Team</label>
                 <div class="input-group input-group-sm mb-1">
-                  <input type="text" class="form-control" v-model="formData.team.name" placeholder="Team Name">
-                  <select class="form-select" v-model="formData.tc" style="max-width: 90px;">
+                  <span class="input-group-text bg-white" v-if="formData.team.logo">
+                    <img :src="formData.team.logo" width="16" height="16" alt="logo">
+                  </span>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    v-model="teamSearch" 
+                    @input="searchTeams(teamSearch)"
+                    @keydown.down.prevent="navigateResults('down', 'team')"
+                    @keydown.up.prevent="navigateResults('up', 'team')"
+                    @keydown.enter.prevent="selectFocused('team')"
+                    placeholder="Search team name..."
+                  >
+                  <select class="form-select" v-model="formData.tc" style="max-width: 90px;" disabled>
                     <option value="" disabled>TC</option>
                     <option value="ENG">ENG</option>
                     <option value="FRA">FRA</option>
@@ -202,7 +231,21 @@
                     <option value="ESP">ESP</option>
                   </select>
                 </div>
-                <input type="text" class="form-control form-control-sm" v-model="formData.team.logo" placeholder="Team Logo URL">
+                <ul class="list-group position-absolute w-100 shadow-sm autocomplete-results mt-1" v-if="teamResults.length">
+                  <li 
+                    class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-1 fs-7 cursor-pointer"
+                    v-for="(t, index) in teamResults" 
+                    :key="t.name"
+                    :class="{ 'active': index === focusedTeamIndex }"
+                    @click="selectTeam(t)"
+                  >
+                    <div class="d-flex align-items-center">
+                      <img :src="t.logo" width="18" height="18" class="me-2" v-if="t.logo">
+                      <span>{{ t.name }}</span>
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary border">{{ t.tc }}</span>
+                  </li>
+                </ul>
               </div>
 
               <!-- SELECT DE STARTER PARA GOALKEEPERS -->
@@ -226,12 +269,42 @@
         </div>
       </div>
     </div>
+
+    <!-- MODAL DE ADVERTENCIA PARA ELIMINAR -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" ref="deleteModalRef">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header py-2 bg-danger text-white">
+            <h6 class="modal-title fw-bold">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>Confirm Deletion
+            </h6>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center py-4 fs-7">
+            <i class="fa-solid fa-trash-can text-danger fs-1 mb-3"></i>
+            <p class="mb-1 fw-bold">Are you sure you want to delete the selected items?</p>
+            <p class="text-muted small mb-0">
+              You are about to delete <strong>{{ selectedFootballers.length }}</strong> footballer(s). This action cannot be undone.
+            </p>
+          </div>
+          <div class="modal-footer py-2">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-sm btn-danger" @click="confirmDelete">
+              <i class="fa-solid fa-trash me-1"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import ipdata from '@/constants/ipdata';
 import portdata from '@/constants/portdata';
+import { countries } from '@/constants/countries';
+import { teams } from '@/constants/teams';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 
@@ -250,6 +323,7 @@ export default {
       isEditing: false,
       currentId: null,
       bsModal: null,
+      bsDeleteModal: null,
       formData: this.getEmptyForm(),
       filters: {
         name: '',
@@ -268,7 +342,18 @@ export default {
         starter: ''
       },
       sortBy: '',
-      sortDirection: 'asc'
+      sortDirection: 'asc',
+      defaultCountries: countries,
+      defaultTeams: teams,
+      nationalitySearch: '',
+      countryOfBirthSearch: '',
+      teamSearch: '',
+      nationalityResults: [],
+      countryOfBirthResults: [],
+      teamResults: [],
+      focusedNationalityIndex: -1,
+      focusedCountryOfBirthIndex: -1,
+      focusedTeamIndex: -1
     };
   },
   computed: {
@@ -356,6 +441,7 @@ export default {
   mounted() {
     this.getFootballers();
     this.bsModal = new Modal(this.$refs.modalRef);
+    this.bsDeleteModal = new Modal(this.$refs.deleteModalRef);
   },
   methods: {
     getEmptyForm() {
@@ -390,15 +476,134 @@ export default {
         console.error(`Error fetching ${this.category}:`, err);
       }
     },
+    searchCountries(query, type) {
+      if (!query || query.trim().length < 1) {
+        if (type === 'nationality') {
+          this.nationalityResults = [];
+          this.focusedNationalityIndex = -1;
+        }
+        if (type === 'countryOfBirth') {
+          this.countryOfBirthResults = [];
+          this.focusedCountryOfBirthIndex = -1;
+        }
+        return;
+      }
+
+      const matches = this.defaultCountries.filter(c => 
+        c.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 5);
+
+      if (type === 'nationality') {
+        this.nationalityResults = matches;
+        this.focusedNationalityIndex = -1;
+      }
+      if (type === 'countryOfBirth') {
+        this.countryOfBirthResults = matches;
+        this.focusedCountryOfBirthIndex = -1;
+      }
+    },
+    selectCountry(country, type) {
+      if (type === 'nationality') {
+        this.formData.nationality.name = country.name;
+        this.formData.nationality.flag = country.flag;
+        this.nationalitySearch = country.name;
+        this.nationalityResults = [];
+        this.focusedNationalityIndex = -1;
+      } else if (type === 'countryOfBirth') {
+        this.formData.countryOfBirth.name = country.name;
+        this.formData.countryOfBirth.flag = country.flag;
+        this.countryOfBirthSearch = country.name;
+        this.countryOfBirthResults = [];
+        this.focusedCountryOfBirthIndex = -1;
+      }
+    },
+    searchTeams(query) {
+      if (!query || query.trim().length < 1) {
+        this.teamResults = [];
+        this.focusedTeamIndex = -1;
+        return;
+      }
+
+      this.teamResults = this.defaultTeams.filter(t => 
+        t.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 5);
+      
+      this.focusedTeamIndex = -1;
+    },
+    selectTeam(t) {
+      this.formData.team.name = t.name;
+      this.formData.team.logo = t.logo;
+      this.formData.tc = t.tc;
+      this.teamSearch = t.name;
+      this.teamResults = [];
+      this.focusedTeamIndex = -1;
+    },
+    navigateResults(direction, type) {
+      if (type === 'nationality') {
+        const total = this.nationalityResults.length;
+        if (!total) return;
+        if (direction === 'down') {
+          this.focusedNationalityIndex = (this.focusedNationalityIndex + 1) % total;
+        } else if (direction === 'up') {
+          this.focusedNationalityIndex = (this.focusedNationalityIndex - 1 + total) % total;
+        }
+      } else if (type === 'countryOfBirth') {
+        const total = this.countryOfBirthResults.length;
+        if (!total) return;
+        if (direction === 'down') {
+          this.focusedCountryOfBirthIndex = (this.focusedCountryOfBirthIndex + 1) % total;
+        } else if (direction === 'up') {
+          this.focusedCountryOfBirthIndex = (this.focusedCountryOfBirthIndex - 1 + total) % total;
+        }
+      } else if (type === 'team') {
+        const total = this.teamResults.length;
+        if (!total) return;
+        if (direction === 'down') {
+          this.focusedTeamIndex = (this.focusedTeamIndex + 1) % total;
+        } else if (direction === 'up') {
+          this.focusedTeamIndex = (this.focusedTeamIndex - 1 + total) % total;
+        }
+      }
+    },
+    selectFocused(type) {
+      if (type === 'nationality' && this.focusedNationalityIndex >= 0) {
+        const selected = this.nationalityResults[this.focusedNationalityIndex];
+        if (selected) this.selectCountry(selected, 'nationality');
+      } else if (type === 'countryOfBirth' && this.focusedCountryOfBirthIndex >= 0) {
+        const selected = this.countryOfBirthResults[this.focusedCountryOfBirthIndex];
+        if (selected) this.selectCountry(selected, 'countryOfBirth');
+      } else if (type === 'team' && this.focusedTeamIndex >= 0) {
+        const selected = this.teamResults[this.focusedTeamIndex];
+        if (selected) this.selectTeam(selected);
+      }
+    },
     openCreateModal() {
       this.isEditing = false;
       this.formData = this.getEmptyForm();
+      this.nationalitySearch = '';
+      this.countryOfBirthSearch = '';
+      this.teamSearch = '';
+      this.nationalityResults = [];
+      this.countryOfBirthResults = [];
+      this.teamResults = [];
+      this.focusedNationalityIndex = -1;
+      this.focusedCountryOfBirthIndex = -1;
+      this.focusedTeamIndex = -1;
       this.bsModal.show();
     },
     showEditDialog(footballer) {
       this.isEditing = true;
       this.currentId = footballer._id;
       this.formData = JSON.parse(JSON.stringify(footballer));
+      this.nationalitySearch = footballer.nationality?.name || '';
+      this.countryOfBirthSearch = footballer.countryOfBirth?.name || '';
+      this.teamSearch = footballer.team?.name || '';
+      this.nationalityResults = [];
+      this.countryOfBirthResults = [];
+      this.teamResults = [];
+      this.focusedNationalityIndex = -1;
+      this.focusedCountryOfBirthIndex = -1;
+      this.focusedTeamIndex = -1;
       this.bsModal.show();
     },
     async saveFootballer() {
@@ -415,14 +620,24 @@ export default {
         console.error('Error saving:', err);
       }
     },
-    deleteSelectedFootballers() {
+    openDeleteModal() {
+      if (this.selectedFootballers.length > 0) {
+        this.bsDeleteModal.show();
+      }
+    },
+    confirmDelete() {
       const promises = this.selectedFootballers.map(id => 
         axios.delete(`http://${ipdata}:${portdata}/${this.category}/${id}`)
       );
-      Promise.all(promises).then(() => {
-        this.selectedFootballers = [];
-        this.getFootballers();
-      });
+      Promise.all(promises)
+        .then(() => {
+          this.selectedFootballers = [];
+          this.getFootballers();
+          this.bsDeleteModal.hide();
+        })
+        .catch(err => {
+          console.error('Error deleting:', err);
+        });
     },
     toggleSelectAll(e) {
       if (e.target.checked) {
@@ -488,5 +703,11 @@ export default {
 
 .cursor-pointer:hover {
   background-color: rgba(0, 0, 0, 0.025);
+}
+
+.autocomplete-results {
+  z-index: 1060 !important;
+  max-height: 180px;
+  overflow-y: auto;
 }
 </style>
