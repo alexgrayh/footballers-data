@@ -299,7 +299,6 @@
 
   </div>
 </template>
-
 <script>
 import ipdata from '@/constants/ipdata';
 import portdata from '@/constants/portdata';
@@ -524,10 +523,21 @@ export default {
         return;
       }
 
+      const specialCharsMap = {
+        'å': 'a', 'æ': 'ae', 'ð': 'd', 'Đ': 'Dj', 'đ': 'dj', 'ı': 'i',
+        'Ł': 'L', 'ł': 'l', 'Ø': 'O', 'ø': 'o', 'ß': 'ss'
+      };
+      const normalizeText = text => (text || '')
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/-/g, ' ')
+        .replace(/å|æ|ð|Đ|đ|ı|Ł|ł|Ø|ø|ß/g, match => specialCharsMap[match] || match)
+        .toLowerCase();
+      const normalizedQuery = normalizeText(query);
       this.teamResults = this.defaultTeams.filter(t => 
-        t.name.toLowerCase().includes(query.toLowerCase())
+        normalizeText(t.name).includes(normalizedQuery)
       ).slice(0, 5);
-      
       this.focusedTeamIndex = -1;
     },
     selectTeam(t) {
@@ -680,7 +690,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .compact-view {
   font-size: 0.82rem;
